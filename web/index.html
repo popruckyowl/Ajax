@@ -14,8 +14,28 @@ and open the template in the editor.
         integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
         crossorigin="anonymous"></script>
     </head>
+    
     <body>
-        <span id="time"></span>
+        <!--天氣描述-->
+<!--        <table id="list" border="1" style="width: 100%">
+            <tr>
+                <td style="width: 200px">時間</td>
+                <td>溫度</td>
+                <td>描述</td>
+            </tr>
+        </table>-->
+        <!--公車路線-->
+        城市:<select id="city">
+            <option value="Taipei">臺北市</option>
+            <option value="NewTaipei">新北市</option>
+            <option value="Taoyuan">桃園市</option>
+        </select>
+        路線:<input id="route"/>
+        <button onclick="search();">送出</button><br/>
+
+        <ul id="list">
+        </ul>
+        
         <script>
             // 顯示時間並更新
 //            function updateTime(){
@@ -27,11 +47,55 @@ and open the template in the editor.
 //                });
 //            }
 //            $(document).ready(updateTime);
-            $.ajax("https://api.openweathermap.org/data/2.5/weather?q=Taoyuan&appid=6e7be90b476f2f072e87640f1bfe51c6",{
-                success: function(data){
-                    document.write(JSON.stringify(data));
-                }
-            });
+
+//            $.ajax(
+//                  // 天氣描述
+////                "https://api.openweathermap.org/data/2.5/forecast", {
+////                data: {
+////                    q: "Taoyuan,tw",
+////                    appid: "6e7be90b476f2f072e87640f1bfe51c6",
+////                    units: "metric"
+////                },
+//            
+////                success: function(data){
+////                    console.log(data)
+////                    $("#temp").text(data.main.temp);
+////                    $("#feels_like").text(data.main.feels_like);
+////                    $("#description").text(data.weather[0].description);
+////                    console.log(data.main.temp);
+////                    console.log(data.main.feels_like);
+////                    console.log(data.weather[0].description);
+//                    // 天氣描述
+////                    for (let w of data.list) {
+////                        let tr=document.createElement("tr");
+////                        $(tr).html("<td>" + w.dt_txt + "</td><td>" 
+////                                + w.main.temp + "</td><td>" 
+////                                + w.weather[0].descroption + 
+////                                "<img src='http://openweathermap.org/img/wn/" + 
+////                                w.weather[0].icon + ".png'/></td>");
+////                        $("#list").append($(tr));
+////                    }
+////                    console.log(data);
+//                }
+//            });
+
+            function search() {
+                $("#list").html("");
+                
+                $.ajax(
+                    "https://ptx.transportdata.tw/MOTC/v2/Bus/RealTimeNearStop/City/" + 
+                    $("#city").val() + "/" + $("#route").val(), {
+                        data: {
+                            $top: 30,
+                            $format: "JSON"
+                        }}).then( (data)=>{
+                            for (let bus of data) {
+                                let li = document.createElement("li");
+                                $(li).html(bus.StopName.Zh_tw);
+                                $("#list").append($(li));
+                            }
+                        } );
+            }
         </script>
     </body>
 </html>
